@@ -1,4 +1,10 @@
-# GymTracker · Руководство пользователя\n\n[Редакция на вики](https://se.cs.petrsu.ru/w/index.php?oldid=340422).\n\n[На страницу проекта](00_Start.md) · [Спецификация требований](02_Requirements.md) · [Макеты](01_Architecture.md#interface)
+# GymTracker · Руководство пользователя
+
+В первом шаге доступна страница проверки связи. Запуск описан в [README](../README.md). Пользовательские пути ниже используются при реализации дневника.
+
+[Редакция на вики](https://se.cs.petrsu.ru/w/index.php?oldid=340422).
+
+[На страницу проекта](00_Start.md) · [Спецификация требований](02_Requirements.md) · [Макеты](01_Architecture.md#interface)
 
 <span id="Руководство_пользователя_GymTracker"></span>
 

@@ -1,4 +1,10 @@
-# GymTracker · Спецификация требований\n\n[Редакция на вики](https://se.cs.petrsu.ru/w/index.php?oldid=340456).\n\n[На главную](00_Start.md) · [Документ проектирования](01_Architecture.md) · [План тестирования](03_Test_Plan.md)
+# GymTracker · Спецификация требований
+
+Условия приёмки каждого требования сведены в [матрицу AT](06_Test_Matrices.md#at).
+
+[Редакция на вики](https://se.cs.petrsu.ru/w/index.php?oldid=340456).
+
+[На главную](00_Start.md) · [Документ проектирования](01_Architecture.md) · [План тестирования](03_Test_Plan.md)
 
 <span id="requirements"></span>
 

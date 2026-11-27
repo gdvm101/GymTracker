@@ -1,4 +1,8 @@
-# GymTracker · План тестирования\n\n[Редакция на вики](https://se.cs.petrsu.ru/w/index.php?oldid=340457). Уточнения для разработки перечислены в разделе [Уточнения пакета](00_Start.md#package-notes).\n\n[На страницу проекта](00_Start.md) · [Спецификация требований](02_Requirements.md) · [Матрица решений](01_Architecture.md#trace) · [Документ о выполнении тестирования](https://se.cs.petrsu.ru/wiki/GymTracker:_%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82_%D0%BE_%D0%B2%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B8_%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
+# GymTracker · План тестирования
+
+[Редакция на вики](https://se.cs.petrsu.ru/w/index.php?oldid=340457). Уточнения для разработки перечислены в разделе [Уточнения пакета](00_Start.md#package-notes).
+
+[На страницу проекта](00_Start.md) · [Спецификация требований](02_Requirements.md) · [Матрица решений](01_Architecture.md#trace) · [Документ о выполнении тестирования](https://se.cs.petrsu.ru/wiki/GymTracker:_%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82_%D0%BE_%D0%B2%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B8_%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
 
 <span id="test-method"></span>
 
@@ -6,7 +10,7 @@
 
 ## Как проводится тестирование
 
-Редакция от 19.11.2026. Проверки описаны для разработки и показа инструктору. Обозначения UT, IT и AT используются в матрице требований и журнале прогонов.
+Редакция от 26.11.2026. [Три цветовые матрицы](06_Test_Matrices.md). Проверки описаны для разработки и показа инструктору. Обозначения UT, IT и AT используются в матрице требований и журнале прогонов.
 
 [Стенд и данные](#test-setup) · [Блочные тесты](#unit) · [Интеграционные тесты](#integration) · [Аттестационные тесты](#acceptance) · [Указатель ФТ и ФО](#coverage)
 
@@ -50,32 +54,32 @@
 
 Каждая строка обозначает одну проверяемую функцию. Указанные пути отсчитываются от backend/app для Python и frontend/src для JSX. Проверка сравнивает конкретное возвращаемое значение либо ожидаемый тип ошибки.
 
-| Тест · приоритет · тип | Функция и алгоритм | Вход | Ожидаемый выход | Требования |
-|---|---|---|---|---|
-| <span id="ut-01"></span>UT-01 · H · позитивный | `normalize_email()` · `schemas/auth.py` · [A-01](01_Architecture.md#alg-A-01) | Строка «  Athlete@Example.TEST  ». | athlete@example.test. Пробелы отсечены, регистр приведён к нижнему. | [ФТ 1.1](02_Requirements.md#req-ft-1-1), [ФТ 2.1](02_Requirements.md#req-ft-2-1), [ФО 2.1](02_Requirements.md#req-fo-2-1) |
-| <span id="ut-02"></span>UT-02 · H · граничный | `RegisterDTO.model_validate()` · `schemas/auth.py` · [A-01](01_Architecture.md#alg-A-01) | Один допустимый адрес; пароли из 7, 8, 128, 129 символов. | Для длин 8 и 128 создан DTO. Для 7 и 129 — ValidationError с полем password. | [ФТ 1.1](02_Requirements.md#req-ft-1-1), [ФО 2.3](02_Requirements.md#req-fo-2-3) |
-| <span id="ut-03"></span>UT-03 · H · позитивный, негативный | `verify_password()` · `core/security.py` · [A-02](01_Architecture.md#alg-A-02) | Хеш, полученный hash_password() из тестового пароля; верный и изменённый пароли. | True для верного, False для изменённого. Хеш имеет формат Argon2id, равенство случайных хешей не проверяется. | [ФТ 2.1](02_Requirements.md#req-ft-2-1), [ФО 2.2](02_Requirements.md#req-fo-2-2) |
-| <span id="ut-04"></span>UT-04 · H · негативный | `verify_csrf()` · `core/security.py` · [A-04](01_Architecture.md#alg-A-04) | Токен, полученный make_csrf() для сеанса S, валидация в S и в независимом сеансе T. | Проверка в S успешна, в T отклонена. HTTP-отказ проверяет IT-05. | [ФТ 2.2](02_Requirements.md#req-ft-2-2), [ФО 1.2](02_Requirements.md#req-fo-1-2) |
-| <span id="ut-05"></span>UT-05 · H · граничный | `ProfilePatchDTO.model_validate()` · `schemas/auth.py` · [A-03](01_Architecture.md#alg-A-03) | height=180.5 и current_weight=70.25; отдельные случаи height=0, current_weight=−0.01, лишнее поле user_id. | Первый объект принят с заданной точностью. Каждый из трёх остальных даёт ValidationError с ошибочным полем. | [ФТ 3.2](02_Requirements.md#req-ft-3-2), [ФТ 3.3](02_Requirements.md#req-ft-3-3), [ФО 1.3](02_Requirements.md#req-fo-1-3), [ФО 3.4](02_Requirements.md#req-fo-3-4) |
-| <span id="ut-06"></span>UT-06 · H · граничный | `ProgramExerciseInput.model_validate()` · `schemas/training.py` · [T-01](01_Architecture.md#alg-T-01) | exercise_id=10, position=1; пары (planned_sets,planned_reps) = (1,0), (0,1), (1,−1), (1.5,2). | Первая пара принята. Остальные отклонены по planned_sets или planned_reps. | [ФТ 5.3](02_Requirements.md#req-ft-5-3), [ФТ 5.4](02_Requirements.md#req-ft-5-4), [ФО 3.1](02_Requirements.md#req-fo-3-1), [ФО 3.2](02_Requirements.md#req-fo-3-2) |
-| <span id="ut-07"></span>UT-07 · H · негативный, позитивный | `WorkoutCreateDTO.model_validate()` · `schemas/training.py` · [T-02](01_Architecture.md#alg-T-02) | Дата 2026-10-09. Массив упражнений пуст; затем одна позиция с пустыми sets; затем одно упражнение с одним подходом 30×10. | В первых двух случаях ошибка в exercises или exercises.0.sets. Последний вход принят. | [ФТ 6.1](02_Requirements.md#req-ft-6-1), [ФТ 6.2](02_Requirements.md#req-ft-6-2), [ФТ 6.3](02_Requirements.md#req-ft-6-3), [ФТ 6.6](02_Requirements.md#req-ft-6-6), [ФО 3.6](02_Requirements.md#req-fo-3-6) |
-| <span id="ut-08"></span>UT-08 · H · граничный | `SetInput.model_validate()` · `schemas/training.py` · [T-02](01_Architecture.md#alg-T-02) | set_number=1. Пары (repetitions,weight) = (0,0), (1,0.01), (−1,30), (2,−0.01), (2.5,30). | Две первые пары приняты. Остальные дают ValidationError по соответствующему полю. | [ФТ 6.4](02_Requirements.md#req-ft-6-4), [ФТ 6.5](02_Requirements.md#req-ft-6-5), [ФО 3.2](02_Requirements.md#req-fo-3-2), [ФО 3.3](02_Requirements.md#req-fo-3-3) |
-| <span id="ut-09"></span>UT-09 · H · граничный | `DateRangeDTO.model_validate()` · `schemas/statistics.py` · [S-01](01_Architecture.md#alg-S-01) | 09.10–09.10, только date_from=09.10, 10.10–09.10. Даты передаются в ISO. | Один день и открытая граница допустимы; обратный диапазон даёт ValidationError. | [ФТ 8.1](02_Requirements.md#req-ft-8-1), [ФТ 7.3](02_Requirements.md#req-ft-7-3), [ФТ 8.6](02_Requirements.md#req-ft-8-6) |
-| <span id="ut-10"></span>UT-10 · H · позитивный, конфликт | `program_revision()` · `services/training_service.py` · [T-01](01_Architecture.md#alg-T-01) | Два снимка одного плана с теми же id и значениями, строки перечислены в разном порядке. В третьем меняется planned_reps с 10 на 8. | У первых двух один и тот же 64-значный hex-результат после сортировки по position. У третьего иное значение. | [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФО 3.7](02_Requirements.md#req-fo-3-7) |
-| <span id="ut-11"></span>UT-11 · M · граничный | `is_new_record()` · `services/statistics_service.py` · [S-05](01_Architecture.md#alg-S-05) | (предыдущий максимум, новый) = (32,34), (34,34), (34,32), (нет,32). | True, False, False, False. Первая запись устанавливает базовый максимум, сообщение о превышении требует прежний результат. | [ФТ 9.1](02_Requirements.md#req-ft-9-1), [ФТ 9.2](02_Requirements.md#req-ft-9-2) |
-| <span id="ut-12"></span>UT-12 · M · граничный | `new_award_codes()` · `services/achievements_service.py` · [S-06](01_Architecture.md#alg-S-06) | Число тренировок 0, 1, 9, 10, 100. В первых двух случаях выданных кодов нет, при 9 и 10 уже есть workout_1, при 100 есть workout_1 и workout_10. | По порядку \[\], \[workout_1\], \[\], \[workout_10\], \[workout_100\]. | [ФТ 9.3](02_Requirements.md#req-ft-9-3), [ФТ 9.4](02_Requirements.md#req-ft-9-4) |
-| <span id="ut-13"></span>UT-13 · M · позитивный, приватность | `visible_metrics()` · `services/social_service.py` · [P-01](01_Architecture.md#alg-P-01) | Масса 70.5, число 2. Для подтверждённого друга пары (показать массу, показать статистику): (false,false), (true,false), (false,true), (true,true). | В части метрик выходы {}, {current_weight:70.5}, {workout_count:2} и оба ключа, согласно соответствующим флагам. | [ФТ 3.5](02_Requirements.md#req-ft-3-5), [ФТ 10.5](02_Requirements.md#req-ft-10-5), [ФО 5.3](02_Requirements.md#req-fo-5-3) |
-| <span id="ut-14"></span>UT-14 · M · граничный | `BodyWeightInputDTO.model_validate()` · `schemas/auth.py` · [S-04](01_Architecture.md#alg-S-04) | Дата 2026-10-09; масса 70.25, 0, −1. Действительную дату сверяют в сервисе по часам приложения. | Первая масса принята. Остальные отклонены по weight. | [ФТ 8.7](02_Requirements.md#req-ft-8-7), [ФТ 8.8](02_Requirements.md#req-ft-8-8), [ФО 3.4](02_Requirements.md#req-fo-3-4) |
-| <span id="ut-15"></span>UT-15 · L · позитивный, граничный | `rank_visible_members()` · `services/groups_service.py` · [G-02](01_Architecture.md#alg-G-02) | Уже разрешённые пары (id,число) = (11,2), (9,2), (8,3). Затем пустая выборка. | Порядок id 8,9,11 с местами 1,2,3. Для пустого входа — \[\]. | [ФТ 11.5](02_Requirements.md#req-ft-11-5) |
-| <span id="ut-16"></span>UT-16 · L · негативный, граничный | `AIRequestDTO.model_validate()` · `schemas/ai.py` · [I-01](01_Architecture.md#alg-I-01) | sample с goal=Сила и duration_min=1, 180, 0, 181. Отдельно пустой text после обрезки пробелов. | 1 и 180 приняты. Остальные входы дают ошибку поля. | [ФТ 12.1](02_Requirements.md#req-ft-12-1), [ФТ 12.4](02_Requirements.md#req-ft-12-4) |
-| <span id="ut-17"></span>UT-17 · L · позитивный, негативный | `normalize_response()` · `integrations/ai.py` · [I-01](01_Architecture.md#alg-I-01) | Ответ заглушки {choices:\[{message:{content:" Готово "}}\]}, затем пустой choices и пустой content. | Строка «Готово». Для двух некорректных ответов ошибка AI_UNAVAILABLE. | [ФТ 12.2](02_Requirements.md#req-ft-12-2), [ФО 6.2](02_Requirements.md#req-fo-6-2) |
-| <span id="ut-18"></span>UT-18 · H · позитивный, негативный | `normalize_error()` · `core/errors.py` · [C-02](01_Architecture.md#alg-C-02) | Ошибка значения weight по пути exercises → 0 → sets → 1 → weight. | ErrorDTO с кодом INVALID_INPUT и details.field=exercises.0.sets.1.weight. | [ФТ 15.3](02_Requirements.md#req-ft-15-3), [ФО 2.3](02_Requirements.md#req-fo-2-3), [ФО 3.3](02_Requirements.md#req-fo-3-3) |
-| <span id="ut-19"></span>UT-19 · H · негативный | `ProgramPatchDTO.model_validate()` · `schemas/training.py` · [T-01](01_Architecture.md#alg-T-01) | {exercises:\[\]} без expected_revision; затем тот же объект с корректной 64-значной ревизией. | Первый вход отклонён; второй описывает допустимую команду очистки состава. | [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФО 3.7](02_Requirements.md#req-fo-3-7) |
-| <span id="ut-20"></span>UT-20 · H · позитивный, граничный | `resolveRoute()` · `app/routes.jsx` · [C-01](01_Architecture.md#alg-C-01) | Гость + /app/workouts/new; А + /login; user без роли admin + /app/admin при включённом admin. | Маршрут входа /login; личная главная /app; состояние «Нет доступа». Проверка в браузере дополняет серверную авторизацию. | [ФТ 15.1](02_Requirements.md#req-ft-15-1), [ФО 1.1](02_Requirements.md#req-fo-1-1), [ФО 1.2](02_Requirements.md#req-fo-1-2), [ФО 1.5](02_Requirements.md#req-fo-1-5) |
-| <span id="ut-21"></span>UT-21 · H · позитивный, граничный | `toWorkoutPayload()` · `components/WorkoutForm.jsx` · [C-02](01_Architecture.md#alg-C-02) | Черновик 2026-10-09, упражнение 10, позиция 1, подход 1, повторы «8», вес «12,5». Отдельно вес «−5». | Для первого входа JSON содержит date и exercises\[0\].sets\[0\] = {set_number:1,repetitions:8,weight:12.5}. Для второго — ошибка поля, запрос не отправляется. | [ФТ 6.3](02_Requirements.md#req-ft-6-3), [ФТ 6.4](02_Requirements.md#req-ft-6-4), [ФТ 6.5](02_Requirements.md#req-ft-6-5), [ФТ 15.3](02_Requirements.md#req-ft-15-3) |
-| <span id="ut-22"></span>UT-22 · H · позитивный, порядок ответов | `acceptProgressResponse()` · `pages/StatisticsPage.jsx` · [C-03](01_Architecture.md#alg-C-03) | Текущий номер запроса 2. По очереди приходят результаты с номерами 2 и 1. | Возвращает true, затем false. На экране остаются данные упражнения из второго запроса. | [ФТ 8.2](02_Requirements.md#req-ft-8-2), [ФТ 8.5](02_Requirements.md#req-ft-8-5) |
-| <span id="ut-23"></span>UT-23 · H · позитивный, граничный | `StatisticsService.workout_count()` · `services/statistics_service.py` · [S-01](01_Architecture.md#alg-S-01) | Подставной TrainingRepository возвращает последовательно 2 и 0; пользователь А, пустой диапазон дат. | SummaryDTO.workout_count равен соответственно 2 и 0. Репозиторий получает именно id А и обе открытые границы. | [ФТ 8.1](02_Requirements.md#req-ft-8-1), [ФО 4.1](02_Requirements.md#req-fo-4-1) |
-| <span id="ut-24"></span>UT-24 · H · негативный | `TrainingService.get_workout()` · `services/training_service.py` · [T-03](01_Architecture.md#alg-T-03) | AuthContext Б, id=101. Подставной репозиторий возвращает отсутствие для пары (Б,101). | Предметная ошибка NOT_FOUND. Метод не пробует прочитать ту же запись без условия владельца. | [ФТ 7.2](02_Requirements.md#req-ft-7-2), [ФО 1.4](02_Requirements.md#req-fo-1-4) |
+| Тест · приоритет · тип | Цель | Функция и алгоритм | Вход | Ожидаемый выход | Требования |
+|---|---|---|---|---|---|
+| <span id="ut-01"></span>UT-01 · H · позитивный · 🟩 П | Сопоставлять один и тот же адрес с одной учётной записью при регистрации и входе независимо от пробелов и регистра. | `normalize_email()` · `schemas/auth.py` · [A-01](01_Architecture.md#alg-A-01) | Строка «  Athlete@Example.TEST  ». | athlete@example.test. Пробелы отсечены, регистр приведён к нижнему. | [ФТ 1.1](02_Requirements.md#req-ft-1-1), [ФТ 2.1](02_Requirements.md#req-ft-2-1), [ФО 2.1](02_Requirements.md#req-fo-2-1) |
+| <span id="ut-02"></span>UT-02 · H · граничный · 🟨 С | Проверить обе границы длины пароля до создания учётной записи. | `RegisterDTO.model_validate()` · `schemas/auth.py` · [A-01](01_Architecture.md#alg-A-01) | Один допустимый адрес; пароли из 7, 8, 128, 129 символов. | Для длин 8 и 128 создан DTO. Для 7 и 129 — ValidationError с полем password. | [ФТ 1.1](02_Requirements.md#req-ft-1-1), [ФО 2.3](02_Requirements.md#req-fo-2-3) |
+| <span id="ut-03"></span>UT-03 · H · позитивный, негативный · 🟩 П | Убедиться, что проверка хеша различает верный пароль и пароль с изменённым символом. | `verify_password()` · `core/security.py` · [A-02](01_Architecture.md#alg-A-02) | Хеш, полученный hash_password() из тестового пароля; верный и изменённый пароли. | True для верного, False для изменённого. Хеш имеет формат Argon2id, равенство случайных хешей не проверяется. | [ФТ 2.1](02_Requirements.md#req-ft-2-1), [ФО 2.2](02_Requirements.md#req-fo-2-2) |
+| <span id="ut-04"></span>UT-04 · H · негативный · 🟥 Н | Исключить использование CSRF-токена из другого сеанса для изменения данных. | `verify_csrf()` · `core/security.py` · [A-04](01_Architecture.md#alg-A-04) | Токен, полученный make_csrf() для сеанса S, валидация в S и в независимом сеансе T. | Проверка в S успешна, в T отклонена. HTTP-отказ проверяет IT-05. | [ФТ 2.2](02_Requirements.md#req-ft-2-2), [ФО 1.2](02_Requirements.md#req-fo-1-2) |
+| <span id="ut-05"></span>UT-05 · H · граничный · 🟨 С | Сохранить допустимую точность роста и веса и выявить запрещённое поле владельца до записи профиля. | `ProfilePatchDTO.model_validate()` · `schemas/auth.py` · [A-03](01_Architecture.md#alg-A-03) | height=180.5 и current_weight=70.25; отдельные случаи height=0, current_weight=−0.01, лишнее поле user_id. | Первый объект принят с заданной точностью. Каждый из трёх остальных даёт ValidationError с ошибочным полем. | [ФТ 3.2](02_Requirements.md#req-ft-3-2), [ФТ 3.3](02_Requirements.md#req-ft-3-3), [ФО 1.3](02_Requirements.md#req-fo-1-3), [ФО 3.4](02_Requirements.md#req-fo-3-4) |
+| <span id="ut-06"></span>UT-06 · H · граничный · 🟨 С | Уточнить нижние границы числа подходов и повторений в плане и исключить дробные подходы. | `ProgramExerciseInput.model_validate()` · `schemas/training.py` · [T-01](01_Architecture.md#alg-T-01) | exercise_id=10, position=1; пары (planned_sets,planned_reps) = (1,0), (0,1), (1,−1), (1.5,2). | Первая пара принята. Остальные отклонены по planned_sets или planned_reps. | [ФТ 5.3](02_Requirements.md#req-ft-5-3), [ФТ 5.4](02_Requirements.md#req-ft-5-4), [ФО 3.1](02_Requirements.md#req-fo-3-1), [ФО 3.2](02_Requirements.md#req-fo-3-2) |
+| <span id="ut-07"></span>UT-07 · H · негативный, позитивный · 🟥 Н | Исключить сохранение тренировки без упражнений или без единого подхода. | `WorkoutCreateDTO.model_validate()` · `schemas/training.py` · [T-02](01_Architecture.md#alg-T-02) | Дата 2026-10-09. Массив упражнений пуст; затем одна позиция с пустыми sets; затем одно упражнение с одним подходом 30×10. | В первых двух случаях ошибка в exercises или exercises.0.sets. Последний вход принят. | [ФТ 6.1](02_Requirements.md#req-ft-6-1), [ФТ 6.2](02_Requirements.md#req-ft-6-2), [ФТ 6.3](02_Requirements.md#req-ft-6-3), [ФТ 6.6](02_Requirements.md#req-ft-6-6), [ФО 3.6](02_Requirements.md#req-fo-3-6) |
+| <span id="ut-08"></span>UT-08 · H · граничный · 🟨 С | Проверить допуск нулевых значений и запрет отрицательных или дробных повторений в фактическом подходе. | `SetInput.model_validate()` · `schemas/training.py` · [T-02](01_Architecture.md#alg-T-02) | set_number=1. Пары (repetitions,weight) = (0,0), (1,0.01), (−1,30), (2,−0.01), (2.5,30). | Две первые пары приняты. Остальные дают ValidationError по соответствующему полю. | [ФТ 6.4](02_Requirements.md#req-ft-6-4), [ФТ 6.5](02_Requirements.md#req-ft-6-5), [ФО 3.2](02_Requirements.md#req-fo-3-2), [ФО 3.3](02_Requirements.md#req-fo-3-3) |
+| <span id="ut-09"></span>UT-09 · H · граничный · 🟨 С | Разрешить фильтр за один день и с открытой границей, выявить перепутанные даты. | `DateRangeDTO.model_validate()` · `schemas/statistics.py` · [S-01](01_Architecture.md#alg-S-01) | 09.10–09.10, только date_from=09.10, 10.10–09.10. Даты передаются в ISO. | Один день и открытая граница допустимы; обратный диапазон даёт ValidationError. | [ФТ 8.1](02_Requirements.md#req-ft-8-1), [ФТ 7.3](02_Requirements.md#req-ft-7-3), [ФТ 8.6](02_Requirements.md#req-ft-8-6) |
+| <span id="ut-10"></span>UT-10 · H · позитивный, конфликт · 🟨 С | Отличить содержательную правку плана от перестановки входных данных с теми же позициями. | `program_revision()` · `services/training_service.py` · [T-01](01_Architecture.md#alg-T-01) | Два снимка одного плана с теми же id и значениями, строки перечислены в разном порядке. В третьем меняется planned_reps с 10 на 8. | У первых двух один и тот же 64-значный hex-результат после сортировки по position. У третьего иное значение. | [ФТ 5.5](02_Requirements.md#req-ft-5-5) |
+| <span id="ut-11"></span>UT-11 · M · граничный · 🟨 С | Засчитать рекорд только при превышении прежнего результата и различить первый, равный и нулевой вес. | `is_new_record()` · `services/statistics_service.py` · [S-05](01_Architecture.md#alg-S-05) | (предыдущий максимум, новый) = (32,34), (34,34), (34,32), (нет,32). | True, False, False, False. Первая запись устанавливает базовый максимум, сообщение о превышении требует прежний результат. | [ФТ 9.1](02_Requirements.md#req-ft-9-1), [ФТ 9.2](02_Requirements.md#req-ft-9-2) |
+| <span id="ut-12"></span>UT-12 · M · граничный · 🟨 С | Проверить выдачу наград на нужных порогах числа тренировок и однократность выдачи. | `new_award_codes()` · `services/achievements_service.py` · [S-06](01_Architecture.md#alg-S-06) | Число тренировок 0, 1, 9, 10, 100. В первых двух случаях выданных кодов нет, при 9 и 10 уже есть workout_1, при 100 есть workout_1 и workout_10. | По порядку \[\], \[workout_1\], \[\], \[workout_10\], \[workout_100\]. | [ФТ 9.3](02_Requirements.md#req-ft-9-3), [ФТ 9.4](02_Requirements.md#req-ft-9-4) |
+| <span id="ut-13"></span>UT-13 · M · позитивный, приватность · 🟨 С | Исключить раскрытие массы или счётчика, когда владелец отключил соответствующий показатель. | `visible_metrics()` · `services/social_service.py` · [P-01](01_Architecture.md#alg-P-01) | Масса 70.5, число 2. Для подтверждённого друга пары (показать массу, показать статистику): (false,false), (true,false), (false,true), (true,true). | В части метрик выходы {}, {current_weight:70.5}, {workout_count:2} и оба ключа, согласно соответствующим флагам. | [ФТ 3.5](02_Requirements.md#req-ft-3-5), [ФТ 10.5](02_Requirements.md#req-ft-10-5), [ФО 5.3](02_Requirements.md#req-fo-5-3) |
+| <span id="ut-14"></span>UT-14 · M · граничный · 🟨 С | Отсеять недопустимые значения измерения массы до сохранения в журнале. | `BodyWeightInputDTO.model_validate()` · `schemas/auth.py` · [S-04](01_Architecture.md#alg-S-04) | Дата 2026-10-09; масса 70.25, 0, −1. Действительную дату сверяют в сервисе по часам приложения. | Первая масса принята. Остальные отклонены по weight. | [ФТ 8.7](02_Requirements.md#req-ft-8-7), [ФТ 8.8](02_Requirements.md#req-ft-8-8), [ФО 3.4](02_Requirements.md#req-fo-3-4) |
+| <span id="ut-15"></span>UT-15 · L · позитивный, граничный · 🟨 С | Обеспечить воспроизводимые места в рейтинге при равных результатах и вернуть корректный пустой список. | `rank_visible_members()` · `services/groups_service.py` · [G-02](01_Architecture.md#alg-G-02) | Уже разрешённые пары (id,число) = (11,2), (9,2), (8,3). Затем пустая выборка. | Порядок id 8,9,11 с местами 1,2,3. Для пустого входа — \[\]. | [ФТ 11.5](02_Requirements.md#req-ft-11-5) |
+| <span id="ut-16"></span>UT-16 · L · негативный, граничный · 🟨 С | Проверить границы параметров запроса к помощнику до вызова внешней службы. | `AIRequestDTO.model_validate()` · `schemas/ai.py` · [I-01](01_Architecture.md#alg-I-01) | sample с goal=Сила и duration_min=1, 180, 0, 181. Отдельно пустой text после обрезки пробелов. | 1 и 180 приняты. Остальные входы дают ошибку поля. | [ФТ 12.1](02_Requirements.md#req-ft-12-1), [ФТ 12.4](02_Requirements.md#req-ft-12-4) |
+| <span id="ut-17"></span>UT-17 · L · позитивный, негативный · 🟥 Н | Получить пригодный к показу текст и перевести некорректный ответ внешней службы в ошибку приложения. | `normalize_response()` · `integrations/ai.py` · [I-01](01_Architecture.md#alg-I-01) | Ответ заглушки {choices:\[{message:{content:" Готово "}}\]}, затем пустой choices и пустой content. | Строка «Готово». Для двух некорректных ответов ошибка AI_UNAVAILABLE. | [ФТ 12.2](02_Requirements.md#req-ft-12-2), [ФО 6.2](02_Requirements.md#req-fo-6-2) |
+| <span id="ut-18"></span>UT-18 · H · позитивный, негативный · 🟥 Н | Сохранить единый код ошибки и точный путь к полю вложенного подхода, чтобы форма подсветила нужное значение. | `normalize_error()` · `core/errors.py` · [C-02](01_Architecture.md#alg-C-02) | Ошибка значения weight по пути exercises → 0 → sets → 1 → weight. | ErrorDTO с кодом INVALID_INPUT и details.field=exercises.0.sets.1.weight. | [ФТ 15.3](02_Requirements.md#req-ft-15-3), [ФО 3.3](02_Requirements.md#req-fo-3-3) |
+| <span id="ut-19"></span>UT-19 · H · негативный · 🟥 Н | Предотвратить замену состава программы без ревизии и допустить явную очистку с актуальной ревизией. | `ProgramPatchDTO.model_validate()` · `schemas/training.py` · [T-01](01_Architecture.md#alg-T-01) | {exercises:\[\]} без expected_revision; затем тот же объект с корректной 64-значной ревизией. | Первый вход отклонён; второй описывает допустимую команду очистки состава. | [ФТ 5.5](02_Requirements.md#req-ft-5-5) |
+| <span id="ut-20"></span>UT-20 · H · позитивный, граничный · 🟨 С | Выбрать правильный экран для гостя, вошедшего пользователя и пользователя без требуемой роли. | `resolveRoute()` · `app/routes.jsx` · [C-01](01_Architecture.md#alg-C-01) | Гость + /app/workouts/new; А + /login; user без роли admin + /app/admin при включённом admin. | Маршрут входа /login; личная главная /app; состояние «Нет доступа». Проверка в браузере дополняет серверную авторизацию. | [ФТ 15.1](02_Requirements.md#req-ft-15-1), [ФО 1.1](02_Requirements.md#req-fo-1-1), [ФО 1.2](02_Requirements.md#req-fo-1-2), [ФО 1.5](02_Requirements.md#req-fo-1-5) |
+| <span id="ut-21"></span>UT-21 · H · позитивный, граничный · 🟩 П | Сохранить номера и числовые значения подхода при формировании запроса и остановить отправку ошибочной строки. | `toWorkoutPayload()` · `components/WorkoutForm.jsx` · [C-02](01_Architecture.md#alg-C-02) | Черновик 2026-10-09, упражнение 10, позиция 1, подход 1, повторы «8», вес «12,5». Отдельно вес «−5». | Для первого входа JSON содержит date и exercises\[0\].sets\[0\] = {set_number:1,repetitions:8,weight:12.5}. Для второго — ошибка поля, запрос не отправляется. | [ФТ 6.3](02_Requirements.md#req-ft-6-3), [ФТ 6.4](02_Requirements.md#req-ft-6-4), [ФТ 6.5](02_Requirements.md#req-ft-6-5), [ФТ 15.3](02_Requirements.md#req-ft-15-3) |
+| <span id="ut-22"></span>UT-22 · H · позитивный, порядок ответов · 🟨 С | Защитить результат последнего выбора упражнения от запоздавшего ответа предыдущего запроса. | `acceptProgressResponse()` · `pages/StatisticsPage.jsx` · [C-03](01_Architecture.md#alg-C-03) | Текущий номер запроса 2. По очереди приходят результаты с номерами 2 и 1. | Возвращает true, затем false. На экране остаются данные упражнения из второго запроса. | [ФТ 8.2](02_Requirements.md#req-ft-8-2), [ФТ 8.5](02_Requirements.md#req-ft-8-5) |
+| <span id="ut-23"></span>UT-23 · H · позитивный, граничный · 🟩 П | Подсчитать только занятия выбранного владельца и вернуть ноль для пустой выборки. | `StatisticsService.workout_count()` · `services/statistics_service.py` · [S-01](01_Architecture.md#alg-S-01) | Подставной TrainingRepository возвращает последовательно 2 и 0; пользователь А, пустой диапазон дат. | SummaryDTO.workout_count равен соответственно 2 и 0. Репозиторий получает именно id А и обе открытые границы. | [ФТ 8.1](02_Requirements.md#req-ft-8-1), [ФО 4.1](02_Requirements.md#req-fo-4-1) |
+| <span id="ut-24"></span>UT-24 · H · негативный · 🟥 Н | Не раскрывать чужую тренировку повторным запросом без фильтра владельца. | `TrainingService.get_workout()` · `services/training_service.py` · [T-03](01_Architecture.md#alg-T-03) | AuthContext Б, id=101. Подставной репозиторий возвращает отсутствие для пары (Б,101). | Предметная ошибка NOT_FOUND. Метод не пробует прочитать ту же запись без условия владельца. | [ФТ 7.2](02_Requirements.md#req-ft-7-2), [ФО 1.4](02_Requirements.md#req-fo-1-4) |
 
 <span id="integration"></span>
 
@@ -91,6 +95,8 @@
 
 ### IT-01 · Учётная запись и сеанс
 
+**Цель теста** Проверить, что регистрация, вход и чтение профиля работают с одной созданной учётной записью и выданным сеансом. Основной класс — 🟩 П.
+
 **Тип** позитивный · H. [R01](01_Architecture.md#api-R01), [R02](01_Architecture.md#api-R02), [R04](01_Architecture.md#api-R04).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -104,6 +110,8 @@
 <span id="IT-02_·_Проверки_адреса_и_пароля"></span>
 
 ### IT-02 · Проверки адреса и пароля
+
+**Цель теста** Убедиться, что дубликат адреса, неверные поля и неверный пароль различимы по ответу и не создают лишних записей. Основной класс — 🟥 Н.
 
 **Тип** негативный, конфликт · H. [R01](01_Architecture.md#api-R01), [R02](01_Architecture.md#api-R02).
 
@@ -119,6 +127,8 @@
 
 ### IT-03 · Независимые сеансы
 
+**Цель теста** Проверить, что выход с одного устройства отзывает только его сеанс. Основной класс — 🟨 С.
+
 <span id="T-INT-04"></span> **Тип** позитивный, изоляция · H. [R02](01_Architecture.md#api-R02), [R03](01_Architecture.md#api-R03), [R04](01_Architecture.md#api-R04).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -132,6 +142,8 @@
 <span id="IT-04_·_Проверка_владельца"></span>
 
 ### IT-04 · Проверка владельца
+
+**Цель теста** Исключить чтение и изменение данных другого владельца по известному идентификатору. Основной класс — 🟥 Н.
 
 **Тип** негативный · H. [R05](01_Architecture.md#api-R05), [R12](01_Architecture.md#api-R12), [R13](01_Architecture.md#api-R13), [R17](01_Architecture.md#api-R17).
 
@@ -147,6 +159,8 @@
 
 ### IT-05 · Отказы до записи
 
+**Цель теста** Убедиться, что сервер отклоняет запрос без нужных прав или токена до записи первого элемента тренировки. Основной класс — 🟥 Н.
+
 <span id="T-INT-03"></span> **Тип** негативный · H. [R15](01_Architecture.md#api-R15).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -161,13 +175,15 @@
 
 ### IT-06 · Две правки одной программы
 
+**Цель теста** Предотвратить потерю сохранённого изменения при правке одного плана из двух вкладок. Основной класс — 🟨 С.
+
 <span id="T-INT-01"></span> **Тип** позитивный, конкурентный · H. [R10](01_Architecture.md#api-R10), [R11](01_Architecture.md#api-R11), [R12](01_Architecture.md#api-R12), [R13](01_Architecture.md#api-R13).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
 |---|---|---|
 | Создать P с двумя упражнениями, два клиента А читают одну revision. Первый меняет порядок и имя полным PATCH, второй с исходной revision пробует удалить строку. | `create_program_route() → TrainingService.create_program() → TrainingRepository.insert_program()` · `update_program_route() → TrainingService.update_program() → TrainingRepository.get_program() → program_revision() → UnitOfWork.commit()` | 201 при создании, первый PATCH — 200, второй — 409 CONFLICT. Свежий R12 возвращает только правку первого, в R10 для P число 2. |
 
-**Связь с требованиями** [ФТ 5.1](02_Requirements.md#req-ft-5-1), [ФТ 5.2](02_Requirements.md#req-ft-5-2), [ФТ 5.3](02_Requirements.md#req-ft-5-3), [ФТ 5.4](02_Requirements.md#req-ft-5-4), [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФО 3.1](02_Requirements.md#req-fo-3-1), [ФО 3.7](02_Requirements.md#req-fo-3-7).
+**Связь с требованиями** [ФТ 5.1](02_Requirements.md#req-ft-5-1), [ФТ 5.2](02_Requirements.md#req-ft-5-2), [ФТ 5.3](02_Requirements.md#req-ft-5-3), [ФТ 5.4](02_Requirements.md#req-ft-5-4), [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФО 3.1](02_Requirements.md#req-fo-3-1).
 
 <span id="it-07"></span>
 
@@ -175,19 +191,23 @@
 
 ### IT-07 · Откат правки плана
 
+**Цель теста** Доказать, что сбой до commit сохраняет прежнюю ревизию и весь прежний состав программы. Основной класс — 🟨 С.
+
 <span id="T-INT-02"></span> **Тип** негативный, атомарность · H. [R12](01_Architecture.md#api-R12), [R13](01_Architecture.md#api-R13).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
 |---|---|---|
 | Снимок P с прежним названием и двумя строками. В тестовой точке после первой изменённой строки до commit вызвать управляемый сбой записи. Затем открыть R12 из другой сессии БД. | `update_program_route() → TrainingService.update_program() → TrainingRepository.get_program() → Session.flush() → UnitOfWork.rollback()` | 500 DATABASE_ERROR. Прежние название, id, порядок, значения и revision совпадают со снимком. |
 
-**Связь с требованиями** [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФО 3.7](02_Requirements.md#req-fo-3-7), [ФТ 15.3](02_Requirements.md#req-ft-15-3).
+**Связь с требованиями** [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФТ 15.3](02_Requirements.md#req-ft-15-3).
 
 <span id="it-08"></span>
 
 <span id="IT-08_·_Сохранение_дерева_и_чтение"></span>
 
 ### IT-08 · Сохранение дерева и чтение
+
+**Цель теста** Проверить прохождение одной записи тренировки от HTTP-запроса до связанных строк базы и обратного чтения. Основной класс — 🟩 П.
 
 **Тип** позитивный · H. [R08](01_Architecture.md#api-R08), [R15](01_Architecture.md#api-R15), [R16](01_Architecture.md#api-R16), [R17](01_Architecture.md#api-R17).
 
@@ -203,6 +223,8 @@
 
 ### IT-09 · Откат тренировки
 
+**Цель теста** Проверить полный откат занятия, подходов и побочных начислений при ошибке до commit. Основной класс — 🟨 С.
+
 <span id="T-INT-05"></span> **Тип** негативный, атомарность · H. [R15](01_Architecture.md#api-R15), [R20](01_Architecture.md#api-R20).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -216,6 +238,8 @@
 <span id="IT-10_·_Агрегаты,_фильтры_и_состав_выборки"></span>
 
 ### IT-10 · Агрегаты, фильтры и состав выборки
+
+**Цель теста** Сверить агрегаты одних и тех же сохранённых подходов по владельцу, дате и типу нагрузки. Основной класс — 🟨 С.
 
 **Тип** позитивный, граничный · H / M. [R16](01_Architecture.md#api-R16), [R20](01_Architecture.md#api-R20), [R21](01_Architecture.md#api-R21), [R22](01_Architecture.md#api-R22).
 
@@ -231,6 +255,8 @@
 
 ### IT-11 · Профиль и хронология массы
 
+**Цель теста** Согласовать массу в профиле с последним измерением и исключить дубликаты за одну дату. Основной класс — 🟨 С.
+
 **Тип** позитивный, конфликт · M. [R05](01_Architecture.md#api-R05), [R23](01_Architecture.md#api-R23), [R24](01_Architecture.md#api-R24), [R25](01_Architecture.md#api-R25).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -244,6 +270,8 @@
 <span id="IT-12_·_Согласие_и_публичная_карточка"></span>
 
 ### IT-12 · Согласие и публичная карточка
+
+**Цель теста** Разрешить только подтверждённому другу читать разрешённые показатели и отозвать это право после разрыва дружбы. Основной класс — 🟨 С.
 
 **Тип** позитивный, приватность · M. [R07](01_Architecture.md#api-R07), [R31](01_Architecture.md#api-R31), [R32](01_Architecture.md#api-R32), [R34](01_Architecture.md#api-R34).
 
@@ -259,6 +287,8 @@
 
 ### IT-13 · Блокировка и администрирование справочника
 
+**Цель теста** Проверить серверные полномочия администратора и отзыв сеанса заблокированного пользователя. Основной класс — 🟥 Н.
+
 **Тип** позитивный, права · M. [R35](01_Architecture.md#api-R35), [R36](01_Architecture.md#api-R36), [R37](01_Architecture.md#api-R37), [R38](01_Architecture.md#api-R38).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -272,6 +302,8 @@
 <span id="IT-14_·_Награда,_рекорд_и_уведомление"></span>
 
 ### IT-14 · Награда, рекорд и уведомление
+
+**Цель теста** Согласовать расчёт рекорда, присвоение награды и единственное уведомление при повторной обработке события. Основной класс — 🟨 С.
 
 **Тип** позитивный, повторная обработка · M / L. [R15](01_Architecture.md#api-R15), [R26](01_Architecture.md#api-R26), [R27](01_Architecture.md#api-R27), [R46](01_Architecture.md#api-R46).
 
@@ -287,6 +319,8 @@
 
 ### IT-15 · Членство и рейтинг
 
+**Цель теста** Согласовать членство в группе, доступ к её составу и исключение скрытых результатов из рейтинга. Основной класс — 🟨 С.
+
 **Тип** позитивный, права · L. [R39](01_Architecture.md#api-R39), [R40](01_Architecture.md#api-R40), [R41](01_Architecture.md#api-R41), [R42](01_Architecture.md#api-R42), [R43](01_Architecture.md#api-R43), [R44](01_Architecture.md#api-R44).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -300,6 +334,8 @@
 <span id="IT-16_·_Обращение_к_помощнику"></span>
 
 ### IT-16 · Обращение к помощнику
+
+**Цель теста** Проверить состав контекста помощника и доступность дневника при отказе внешнего адаптера. Основной класс — 🟨 С.
 
 **Тип** позитивный, отказ зависимости · L. [R45](01_Architecture.md#api-R45), [R16](01_Architecture.md#api-R16).
 
@@ -315,6 +351,8 @@
 
 ### IT-17 · Изменение и удаление занятия
 
+**Цель теста** Убедиться, что правка и удаление тренировки меняют статистику и дочерние строки, сохраняя упражнение справочника. Основной класс — 🟩 П.
+
 **Тип** позитивный, целостность · M. [R17](01_Architecture.md#api-R17), [R18](01_Architecture.md#api-R18), [R19](01_Architecture.md#api-R19), [R21](01_Architecture.md#api-R21).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -328,6 +366,8 @@
 <span id="IT-18_·_Уведомление_о_заявке"></span>
 
 ### IT-18 · Уведомление о заявке
+
+**Цель теста** Доставить уведомление о заявке ровно нужному получателю и связать его с исходной заявкой. Основной класс — 🟩 П.
 
 **Тип** позитивный, адресат · L. [R31](01_Architecture.md#api-R31), [R46](01_Architecture.md#api-R46).
 
@@ -343,6 +383,8 @@
 
 ### IT-19 · Пооперационная правка строки программы
 
+**Цель теста** Проверить одиночные операции над строкой программы и изоляцию строк разных планов. Основной класс — 🟩 П.
+
 **Тип** позитивный, граничный · H. [R47](01_Architecture.md#api-R47), [R48](01_Architecture.md#api-R48), [R49](01_Architecture.md#api-R49), [R12](01_Architecture.md#api-R12).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
@@ -357,19 +399,23 @@
 
 ### IT-20 · Неверное поле и стабильное сообщение
 
+**Цель теста** Передать ошибку вложенного поля от сервера до клиента с полным путём и сохранить исходное состояние БД. Основной класс — 🟥 Н.
+
 **Тип** негативный, обработка ошибок · H. [R15](01_Architecture.md#api-R15).
 
 | Вход и предусловие | Проверяемые вызовы | Ожидаемый ответ и состояние |
 |---|---|---|
-| Второй подход жима содержит weight=−5. Отправить напрямую через TestClient в JSON и сосчитать строки до и после. | `FastAPI → WorkoutCreateDTO.model_validate() → normalize_error() → ErrorDTO` · `TrainingService.save_workout() при ошибочном DTO не вызывается` | 422 INVALID_INPUT, details.field=exercises.0.sets.1.weight. Нет новых тренировок, упражнений и подходов. |
+| В двух независимых случаях второй подход жима содержит weight=−5 или repetitions=−1. Другое поле допустимо. Отправить напрямую через TestClient в JSON и сосчитать строки до и после. | `FastAPI → WorkoutCreateDTO.model_validate() → normalize_error() → ErrorDTO` · `TrainingService.save_workout() при ошибочном DTO не вызывается` | В каждом случае 422 INVALID_INPUT. Путь details.field равен exercises.0.sets.1.weight или exercises.0.sets.1.repetitions соответственно. После каждого отказа число тренировок, выполнений упражнений и подходов прежнее. |
 
-**Связь с требованиями** [ФТ 15.3](02_Requirements.md#req-ft-15-3), [ФО 3.2](02_Requirements.md#req-fo-3-2), [ФО 3.3](02_Requirements.md#req-fo-3-3), [ФО 2.3](02_Requirements.md#req-fo-2-3).
+**Связь с требованиями** [ФТ 15.3](02_Requirements.md#req-ft-15-3), [ФО 3.2](02_Requirements.md#req-fo-3-2), [ФО 3.3](02_Requirements.md#req-fo-3-3).
 
 <span id="it-21"></span>
 
 <span id="IT-21_·_Каталог,_поиск_и_отдельная_программа"></span>
 
 ### IT-21 · Каталог, поиск и отдельная программа
+
+**Цель теста** Согласовать идентификатор упражнения между поиском и карточкой и сохранить каталог и историю после удаления плана. Основной класс — 🟩 П.
 
 **Тип** позитивный · M. [R08](01_Architecture.md#api-R08), [R09](01_Architecture.md#api-R09), [R14](01_Architecture.md#api-R14).
 
@@ -384,6 +430,8 @@
 <span id="IT-22_·_Уникальность_регистрации_в_двух_запросах"></span>
 
 ### IT-22 · Уникальность регистрации в двух запросах
+
+**Цель теста** Проверить уникальность аккаунта и профиля при одновременной регистрации одного адреса двумя клиентами. Основной класс — 🟨 С.
 
 **Тип** конкурентный, негативный · H. [R01](01_Architecture.md#api-R01).
 
@@ -407,6 +455,8 @@
 
 ### AT-01 · Регистрация и вход
 
+**Цель теста** Убедиться, что новый пользователь может зарегистрироваться, войти и открыть собственный профиль. Основной класс — 🟩 П.
+
 **Тип** позитивный · H.
 
 **Исходное состояние** Чистый браузер, свободный адрес new@example.test.
@@ -424,6 +474,8 @@
 <span id="AT-02_·_Проверки_регистрации_и_входа"></span>
 
 ### AT-02 · Проверки регистрации и входа
+
+**Цель теста** Проверить, что пользователь понимает причину отказа при регистрации и входе и может исправить нужное поле. Основной класс — 🟥 Н.
 
 **Тип** негативный, граничный · H.
 
@@ -444,6 +496,8 @@
 
 ### AT-03 · Выход и закрытый раздел
 
+**Цель теста** Исключить доступ к личной истории по сохранённой ссылке после выхода. Основной класс — 🟥 Н.
+
 **Тип** позитивный, негативный · H.
 
 **Исходное состояние** А вошёл, открыта история.
@@ -460,6 +514,8 @@
 <span id="AT-04_·_Сохранение_сеанса"></span>
 
 ### AT-04 · Сохранение сеанса
+
+**Цель теста** Проверить сохранение входа в пределах действующего сеанса и возврат к форме после его завершения. Основной класс — 🟨 С.
 
 **Тип** позитивный · M.
 
@@ -479,6 +535,8 @@
 
 ### AT-05 · Профиль и его поля
 
+**Цель теста** Дать владельцу изменить допустимые данные профиля и увидеть их после повторного открытия. Основной класс — 🟩 П.
+
 **Тип** позитивный, граничный · H.
 
 **Исходное состояние** А вошёл.
@@ -496,6 +554,8 @@
 <span id="AT-06_·_Чтение_справочника"></span>
 
 ### AT-06 · Чтение справочника
+
+**Цель теста** Убедиться, что при составлении плана можно выбрать то же упражнение, которое видно в справочнике. Основной класс — 🟩 П.
 
 **Тип** позитивный · H.
 
@@ -515,6 +575,8 @@
 
 ### AT-07 · Поиск и подробности упражнения
 
+**Цель теста** Дать пользователю найти упражнение без учёта регистра, прочитать карточку и восстановить список после пустого поиска. Основной класс — 🟨 С.
+
 **Тип** позитивный, граничный · M.
 
 **Исходное состояние** Включены exercise_search и exercise_details.
@@ -532,16 +594,18 @@
 
 ### AT-08 · Создание и изменение плана
 
+**Цель теста** Проверить, что пользователь создаёт и редактирует план, видит сохранённый порядок и не меняет ранее записанное занятие. Основной класс — 🟩 П.
+
 **Тип** позитивный · H.
 
-**Исходное состояние** У А нет плана «Тренировка груди». В истории А уже есть контрольная тренировка за 09.10.2026.
+**Исходное состояние** У А нет плана «Тренировка груди». В истории есть занятие 09.10 с тремя подходами 30×10, 30×8, 32×6.
 
 1.  На 07 нажать «+ Новая программа», ввести название и нажать «Сохранить».
 2.  Выбрать созданную строку и нажать «Изменить». Нажать «+ Добавить упражнение», выбрать жим, указать 3 подхода и 10 повторений. Сохранить.
 3.  Повторно открыть на правку, изменить повторения на 8, добавить тягу 2×12. Сохранить и нажать «Открыть».
 4.  После сохранения плана открыть тренировку за 09.10.2026 в истории. Сверить упражнение, все три подхода и число сохранённых тренировок.
 
-**Ожидаемый результат** В списке один новый план, у него два упражнения. В режиме чтения жим 3×8, тяга 2×12 в заданном порядке. В истории одна сохранённая тренировка за 09.10.2026 с жимом гантелей и тремя подходами 30 кг × 10, 30 кг × 8 и 32 кг × 6.
+**Ожидаемый результат** В списке один новый план с жимом 3×8 и тягой 2×12 в заданном порядке. В истории остаётся занятие за 09.10 с прежними тремя подходами.
 
 **Требования** [ФТ 5.1](02_Requirements.md#req-ft-5-1), [ФТ 5.2](02_Requirements.md#req-ft-5-2), [ФТ 5.3](02_Requirements.md#req-ft-5-3), [ФТ 5.4](02_Requirements.md#req-ft-5-4), [ФТ 5.5](02_Requirements.md#req-ft-5-5), [ФО 3.1](02_Requirements.md#req-fo-3-1), [ФО 2.4](02_Requirements.md#req-fo-2-4), [ФО 3.7](02_Requirements.md#req-fo-3-7).
 
@@ -550,6 +614,8 @@
 <span id="AT-09_·_Границы_чисел_в_плане"></span>
 
 ### AT-09 · Границы чисел в плане
+
+**Цель теста** Установить, что форма отличает допустимый план 1×0 от недопустимых значений и сохраняет прежний план при отмене. Основной класс — 🟨 С.
 
 **Тип** граничный, негативный · H.
 
@@ -569,6 +635,8 @@
 
 ### AT-10 · Удаление плана
 
+**Цель теста** Позволить отменить удаление программы либо подтвердить его с сохранением истории выполненных тренировок. Основной класс — 🟩 П.
+
 **Тип** позитивный · M.
 
 **Исходное состояние** Включён program_delete. У А есть план и две проведённые тренировки.
@@ -585,6 +653,8 @@
 <span id="AT-11_·_Запись_занятия_с_подходами"></span>
 
 ### AT-11 · Запись занятия с подходами
+
+**Цель теста** Дать спортсмену записать все подходы одного занятия и проверить их в собственной истории. Основной класс — 🟩 П.
 
 **Тип** позитивный · H.
 
@@ -604,6 +674,8 @@
 
 ### AT-12 · Некорректный и нулевой подход
 
+**Цель теста** Проверить исправление ошибочного подхода без потери черновика и корректный учёт допустимого нулевого результата. Основной класс — 🟨 С.
+
 **Тип** граничный, негативный · H.
 
 **Исходное состояние** А, пустая история, на 09 выбран жим.
@@ -621,6 +693,8 @@
 <span id="AT-13_·_История,_повторное_чтение,_счётчик_и_динамика"></span>
 
 ### AT-13 · История, повторное чтение, счётчик и динамика
+
+**Цель теста** Сверить порядок истории, подробности, число занятий и рабочие максимумы пользователя на двух известных тренировках. Основной класс — 🟩 П.
 
 **Тип** позитивный · H.
 
@@ -640,6 +714,8 @@
 
 ### AT-14 · Границы доступа двух владельцев
 
+**Цель теста** Проверить, что второй пользователь не может прочесть или изменить чужую программу и тренировку по прямой ссылке. Основной класс — 🟥 Н.
+
 **Тип** негативный · H.
 
 **Исходное состояние** Два независимых окна браузера, А и Б. У А есть программа и занятие, известны ссылки из его окна.
@@ -657,6 +733,8 @@
 <span id="AT-15_·_Правка,_удаление_и_пересчёт"></span>
 
 ### AT-15 · Правка, удаление и пересчёт
+
+**Цель теста** Показать владельцу правильный пересчёт истории и максимумов после изменения и удаления занятия. Основной класс — 🟩 П.
 
 **Тип** позитивный · M.
 
@@ -676,6 +754,8 @@
 
 ### AT-16 · Фильтры истории
 
+**Цель теста** Проверить совместную работу фильтров упражнения и дат, а также восстановление всей истории после сброса. Основной класс — 🟨 С.
+
 **Тип** позитивный, граничный · M.
 
 **Исходное состояние** Включён history_filters. У А жим 09 и 10 октября, 11 октября только тяга.
@@ -693,6 +773,8 @@
 
 ### AT-17 · Объём, график и период
 
+**Цель теста** Дать спортсмену сопоставить график рабочих весов и объём за весь диапазон, один день и пустой период. Основной класс — 🟨 С.
+
 **Тип** позитивный, граничный · M.
 
 **Исходное состояние** Включены charts и volume. Два контрольных занятия.
@@ -709,6 +791,8 @@
 <span id="AT-18_·_Масса_тела_и_последняя_дата"></span>
 
 ### AT-18 · Масса тела и последняя дата
+
+**Цель теста** Проверить, что запись задним числом и повтор даты не искажают текущую массу в профиле. Основной класс — 🟨 С.
 
 **Тип** позитивный, граничный · M.
 
@@ -728,6 +812,8 @@
 
 ### AT-19 · Рекорды, награды и профиль
 
+**Цель теста** Проверить отображение первой награды и нового рекорда и отсутствие повторной выдачи за равный вес. Основной класс — 🟨 С.
+
 **Тип** позитивный, граничный · M.
 
 **Исходное состояние** Включены profile_progress, records и achievements, у А пустая история.
@@ -745,6 +831,8 @@
 <span id="AT-20_·_Запрос,_отказ,_подтверждение_и_удаление"></span>
 
 ### AT-20 · Запрос, отказ, подтверждение и удаление
+
+**Цель теста** Дать двум пользователям пройти запрос, отказ, подтверждение и удаление дружбы с согласованным результатом на обеих сторонах. Основной класс — 🟩 П.
 
 **Тип** позитивный · M.
 
@@ -765,6 +853,8 @@
 
 ### AT-21 · Независимые настройки приватности
 
+**Цель теста** Убедиться, что владелец независимо разрешает показ массы и счётчика и друг видит только выбранное. Основной класс — 🟥 Н.
+
 **Тип** позитивный, негативный · M.
 
 **Исходное состояние** Включены friends и privacy. А и Б друзья; у А масса 70,5 и две тренировки.
@@ -782,6 +872,8 @@
 <span id="AT-22_·_Администратор_и_обычный_пользователь"></span>
 
 ### AT-22 · Администратор и обычный пользователь
+
+**Цель теста** Проверить доступность управления аккаунтами только администратору и последствия блокировки для активного сеанса. Основной класс — 🟥 Н.
 
 **Тип** позитивный, негативный · M.
 
@@ -801,6 +893,8 @@
 
 ### AT-23 · Ведение общего справочника
 
+**Цель теста** Дать администратору исправить описание упражнения и проверить, что обычный пользователь видит обновление только для чтения. Основной класс — 🟩 П.
+
 **Тип** позитивный · M.
 
 **Исходное состояние** Включён admin. В справочнике нет «Подъём на носки».
@@ -818,6 +912,8 @@
 <span id="AT-24_·_Группы_и_рейтинг"></span>
 
 ### AT-24 · Группы и рейтинг
+
+**Цель теста** Проверить видимый состав группы и места открытых участников, включая изменение доступа после выхода. Основной класс — 🟨 С.
 
 **Тип** позитивный, негативный · L.
 
@@ -837,6 +933,8 @@
 
 ### AT-25 · Три режима помощника
 
+**Цель теста** Проверить, что три режима помощника дают различимый справочный ответ и не изменяют дневник пользователя. Основной класс — 🟩 П.
+
 **Тип** позитивный · L.
 
 **Исходное состояние** Включён AI, настроена заглушка с отдельным текстом для каждого режима. А имеет два занятия.
@@ -855,6 +953,8 @@
 
 ### AT-26 · Дневник при недоступности помощника
 
+**Цель теста** Сохранить возможность записать и открыть тренировку как при отключённом, так и при недоступном помощнике. Основной класс — 🟨 С.
+
 **Тип** негативный, устойчивость · H / L.
 
 **Исходное состояние** Два прогона. В первом AI выключен. Во втором включён, заглушка отвечает с тайм-аутом.
@@ -871,6 +971,8 @@
 <span id="AT-27_·_Уведомления"></span>
 
 ### AT-27 · Уведомления
+
+**Цель теста** Проверить доставку двух видов событий нужному пользователю и переход из уведомления к его источнику. Основной класс — 🟩 П.
 
 **Тип** позитивный · L.
 
@@ -890,6 +992,8 @@
 
 ### AT-28 · Шапка, меню и возвраты
 
+**Цель теста** Проверить логотип, выбор текущего пункта меню и возврат из формы даже после открытия прямой ссылки. Основной класс — 🟩 П.
+
 <span id="T-SYS-01"></span>**Тип** позитивный, удобство использования · H.
 
 **Исходное состояние** Чистый браузер, есть аккаунт А.
@@ -907,6 +1011,8 @@
 <span id="AT-29_·_Узкое_окно_и_браузеры"></span>
 
 ### AT-29 · Узкое окно и браузеры
+
+**Цель теста** Подтвердить доступность полей и действий с клавиатуры в двух браузерах на обычной и узкой ширине. Основной класс — 🟨 С.
 
 **Тип** совместимость, позитивный · H / M.
 
@@ -926,6 +1032,8 @@
 
 ### AT-30 · Сбой при чтении или отправке
 
+**Цель теста** Проверить восстановление после сбоя чтения или отправки и исключить повторное создание уже сохранённого занятия. Основной класс — 🟨 С.
+
 **Тип** негативный, восстановление · H.
 
 **Исходное состояние** Открыта свежая форма и доступен переключатель offline в DevTools.
@@ -942,6 +1050,8 @@
 <span id="AT-31_·_Хранение_пароля_и_серверная_валидация"></span>
 
 ### AT-31 · Хранение пароля и серверная валидация
+
+**Цель теста** Убедиться, что пароль хранится в виде проверяемого хеша, а неверные данные отклоняет сервер. Основной класс — 🟨 С.
 
 **Тип** приёмочный контроль хранения · H.
 
@@ -961,6 +1071,8 @@
 
 ### AT-32 · Ручной ввод тренировки
 
+**Цель теста** Подтвердить, что пользователь может вручную записать подход без устройства или видеозагрузки. Основной класс — 🟨 С.
+
 **Тип** приёмка границ поставки · L.
 
 **Исходное состояние** Веб-клиент в браузере телефона, поставка с каталогом упражнений.
@@ -978,6 +1090,8 @@
 <span id="AT-33_·_Основная_сборка_без_расширений"></span>
 
 ### AT-33 · Основная сборка без расширений
+
+**Цель теста** Проверить полноту обязательного дневника и недоступность отключённых расширений и административных данных в сборке H. Основной класс — 🟩 П.
 
 **Тип** позитивный, границы ролей · H.
 
@@ -1107,7 +1221,7 @@
 | <span id="test-fo-1-5"></span>[ФО 1.5](02_Requirements.md#req-fo-1-5) · H | [Решение](01_Architecture.md#trace-fo-1-5) | [UT-20](#ut-20) | [IT-13](#it-13) | [AT-22](#at-22), [AT-23](#at-23), [AT-33](#at-33) |
 | <span id="test-fo-2-1"></span>[ФО 2.1](02_Requirements.md#req-fo-2-1) · H | [Решение](01_Architecture.md#trace-fo-2-1) | [UT-01](#ut-01) | [IT-02](#it-02), [IT-22](#it-22) | [AT-02](#at-02) |
 | <span id="test-fo-2-2"></span>[ФО 2.2](02_Requirements.md#req-fo-2-2) · H | [Решение](01_Architecture.md#trace-fo-2-2) | [UT-03](#ut-03) | [IT-01](#it-01) | [AT-31](#at-31) |
-| <span id="test-fo-2-3"></span>[ФО 2.3](02_Requirements.md#req-fo-2-3) · H | [Решение](01_Architecture.md#trace-fo-2-3) | [UT-02](#ut-02), [UT-18](#ut-18) | [IT-02](#it-02), [IT-20](#it-20) | [AT-02](#at-02), [AT-31](#at-31) |
+| <span id="test-fo-2-3"></span>[ФО 2.3](02_Requirements.md#req-fo-2-3) · H | [Решение](01_Architecture.md#trace-fo-2-3) | [UT-02](#ut-02) | [IT-02](#it-02) | [AT-02](#at-02), [AT-31](#at-31) |
 | <span id="test-fo-2-4"></span>[ФО 2.4](02_Requirements.md#req-fo-2-4) · H | [Решение](01_Architecture.md#trace-fo-2-4) | — | [IT-01](#it-01) | [AT-05](#at-05), [AT-08](#at-08), [AT-13](#at-13) |
 | <span id="test-fo-3-1"></span>[ФО 3.1](02_Requirements.md#req-fo-3-1) · H | [Решение](01_Architecture.md#trace-fo-3-1) | [UT-06](#ut-06) | [IT-06](#it-06) | [AT-08](#at-08), [AT-09](#at-09) |
 | <span id="test-fo-3-2"></span>[ФО 3.2](02_Requirements.md#req-fo-3-2) · H | [Решение](01_Architecture.md#trace-fo-3-2) | [UT-06](#ut-06), [UT-08](#ut-08) | [IT-20](#it-20) | [AT-09](#at-09), [AT-12](#at-12) |
@@ -1115,7 +1229,7 @@
 | <span id="test-fo-3-4"></span>[ФО 3.4](02_Requirements.md#req-fo-3-4) · H | [Решение](01_Architecture.md#trace-fo-3-4) | [UT-05](#ut-05), [UT-14](#ut-14) | [IT-11](#it-11) | [AT-05](#at-05) |
 | <span id="test-fo-3-5"></span>[ФО 3.5](02_Requirements.md#req-fo-3-5) · H | [Решение](01_Architecture.md#trace-fo-3-5) | — | [IT-04](#it-04), [IT-08](#it-08) | [AT-11](#at-11), [AT-13](#at-13) |
 | <span id="test-fo-3-6"></span>[ФО 3.6](02_Requirements.md#req-fo-3-6) · H | [Решение](01_Architecture.md#trace-fo-3-6) | [UT-07](#ut-07) | [IT-08](#it-08), [IT-09](#it-09) | [AT-11](#at-11) |
-| <span id="test-fo-3-7"></span>[ФО 3.7](02_Requirements.md#req-fo-3-7) · H | [Решение](01_Architecture.md#trace-fo-3-7) | [UT-10](#ut-10), [UT-19](#ut-19) | [IT-06](#it-06), [IT-07](#it-07), [IT-09](#it-09), [IT-17](#it-17), [IT-21](#it-21) | [AT-08](#at-08), [AT-10](#at-10), [AT-15](#at-15) |
+| <span id="test-fo-3-7"></span>[ФО 3.7](02_Requirements.md#req-fo-3-7) · H | [Решение](01_Architecture.md#trace-fo-3-7) | — | [IT-09](#it-09), [IT-17](#it-17), [IT-21](#it-21) | [AT-08](#at-08), [AT-10](#at-10), [AT-15](#at-15) |
 | <span id="test-fo-4-1"></span>[ФО 4.1](02_Requirements.md#req-fo-4-1) · H | [Решение](01_Architecture.md#trace-fo-4-1) | [UT-23](#ut-23) | [IT-09](#it-09), [IT-10](#it-10) | [AT-12](#at-12), [AT-13](#at-13) |
 | <span id="test-fo-4-2"></span>[ФО 4.2](02_Requirements.md#req-fo-4-2) · M | [Решение](01_Architecture.md#trace-fo-4-2) | — | [IT-10](#it-10) | [AT-17](#at-17) |
 | <span id="test-fo-4-3"></span>[ФО 4.3](02_Requirements.md#req-fo-4-3) · M | [Решение](01_Architecture.md#trace-fo-4-3) | — | [IT-17](#it-17) | [AT-15](#at-15) |
